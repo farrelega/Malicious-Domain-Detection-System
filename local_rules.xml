@@ -1,0 +1,56 @@
+<group name="suricata-http">
+  <rule id="100210" level="8">
+    <if_group>suricata</if_group>
+    <field name="event_type">http</field>
+    <description>Suricata HTTP request - trigger VT URL lookup</description>
+    <options>no_full_log</options>
+  </rule>
+</group>
+
+<group name="suricata-tls">
+  <rule id="100301" level="8">
+    <if_group>suricata</if_group>
+    <field name="event_type">tls</field>
+    <field name="tls.sni" negate="yes">\.local$</field>
+    <field name="tls.sni" negate="yes">^_.*\._tcp\.local$</field>
+    <field name="tls.sni" negate="yes">^_.*\._udp\.local$</field>
+    <description>Suricata TLS (SNI) observed - trigger VT domain lookup</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="100302" level="8">
+    <if_group>suricata</if_group>
+    <field name="event_type">dns</field>
+    <field name="dns.rrname" negate="yes">\.local$</field>
+    <field name="dns.rrname" negate="yes">^_.*\._tcp\.local$</field>
+    <field name="dns.rrname" negate="yes">^_.*\._udp\.local$</field>
+    <description>Suricata DNS query observed - trigger VT domain lookup</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <!-- Added separate rule for mDNS to avoid triggering integration -->
+  <rule id="100303" level="2">
+    <if_group>suricata</if_group>
+    <field name="event_type">mdns</field>
+    <description>Suricata mDNS query observed (local network discovery)</description>
+    <options>no_full_log</options>
+  </rule>
+</group>
+
+<!-- Updated rules to match JSON output from VirusTotal integration -->
+<group name="virustotal-integration">
+  <!-- Added malicious field check to ensure rule only triggers for malicious URLs -->
+  <rule id="119100" level="10">
+    <field name="integration">custom-vt-url</field>
+    <field name="malicious">true</field>
+    <description>VirusTotal: MALICIOUS URL $(url) accessed by endpoint $(source_ip) - Detected by $(stats.malicious) security vendors</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="119200" level="10">
+    <field name="integration">custom-vt-domain</field>
+    <field name="malicious">true</field>
+    <description>VirusTotal: MALICIOUS domain $(url) accessed by endpoint $(source_ip) - Detected by $(stats.malicious) security vendors</description>
+    <options>no_full_log</options>
+  </rule>
+</group>
