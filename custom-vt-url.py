@@ -60,7 +60,7 @@ WHITELIST_DOMAINS = [
     "symantec.com",
     
     # CDNs and common services
-    “detectportal.firefox.com”,
+    "detectportal.firefox.com",
     "cloudflare.com",
     "amazonaws.com",
     "azure.com",
